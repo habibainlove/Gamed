@@ -1,0 +1,93 @@
+const {
+  Client,
+  GatewayIntentBits,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder,
+} = require("discord.js");
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
+
+let players = [];
+
+// 🎮 أمر الألعاب
+client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
+
+  if (message.content === "-العاب") {
+    const embed = new EmbedBuilder()
+      .setTitle("🎮 قائمة الألعاب")
+      .setDescription("اختار لعبة من الأزرار 👇");
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("roulette")
+        .setLabel("🎡 روليت")
+        .setStyle(ButtonStyle.Primary)
+    );
+
+    message.channel.send({
+      embeds: [embed],
+      components: [row],
+    });
+  }
+});
+
+// 🎡 الروليت
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isButton()) return;
+
+  if (interaction.customId === "roulette") {
+    players = [];
+    const channel = interaction.channel;
+
+    await interaction.reply({
+      content: "🎡 اللعبة بدأت!\nاكتب `join` للدخول و `start` للبدء",
+      ephemeral: true,
+    });
+
+    const collector = channel.createMessageCollector({ time: 30000 });
+
+    collector.on("collect", (m) => {
+      if (m.author.bot) return;
+
+      if (m.content === "join") {
+        if (players.find(p => p.id === m.author.id)) return;
+        players.push({ id: m.author.id, name: m.author.username });
+        m.reply("✅ دخلت اللعبة");
+      }
+
+      if (m.content === "start") {
+        collector.stop();
+
+        if (players.length < 2) {
+          return channel.send("لازم على الأقل 2 لاعبين 😅");
+        }
+
+        channel.send("🎡 العجلة بتلف...");
+
+        setTimeout(() => {
+          const index = Math.floor(Math.random() * players.length);
+          const loser = players[index];
+
+          channel.send(`💥 الحظ اختار: ${loser.name}`);
+        }, 3000);
+      }
+    });
+  }
+});
+client.login(MTUwNzc3NjM5NzEwMjU1MTE5MQ.GjsjZE.LFF2BnJP6FSmryjQIi-YBHVeh084_uL0n7wpoA);
+client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
+
+  if (message.content === "-العاب") {
+    message.channel.send("-روليت");
+  }
+});
