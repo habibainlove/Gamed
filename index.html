@@ -1,28 +1,620 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>by redmoon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RedMoon Dashboard</title>
 <style>
-html,body{margin:0;height:100%}
-body{
-  display:grid;
-  place-items:center;
-  background:radial-gradient(circle at 50% 40%,#5a0812 0%,#12040a 70%);
-  font-family:system-ui,Tahoma,sans-serif;
-}
-h1{
-  margin:0;
-  color:#ff2a3d;
-  font-size:clamp(36px,8vw,72px);
-  letter-spacing:4px;
-  text-shadow:0 0 24px #e11d2e88;
-  font-weight:800;
-}
+:root{--red:#e11d2e;--red-2:#ff4d5e;--red-d:#8f0c19;--bg:#0f0508;--panel:#1a090e;--panel-2:#220e14;--line:#3a1620;--text:#fbe9ec;--muted:#b98a92;--ok:#4ade80;--warn:#fbbf24}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,Tahoma,"Segoe UI",sans-serif;background:radial-gradient(1200px 600px at 80% -10%,#3a0710 0%,transparent 60%),var(--bg);color:var(--text);min-height:100vh;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(90deg,var(--red-d),var(--red));box-shadow:0 6px 24px #e11d2e44}
+header h1{margin:0;font-size:22px;letter-spacing:1px}
+header .moon{font-size:26px;filter:drop-shadow(0 0 6px #fff4)}
+header .sub{margin-right:auto;opacity:.85;font-size:13px}
+header .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+nav{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap;position:sticky;top:58px;background:var(--bg);z-index:9}
+nav button{background:transparent;color:var(--muted);border:1px solid var(--line);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:14px;transition:.15s}
+nav button .badge{margin-right:6px;background:#2a0d14;border-radius:999px;padding:1px 8px;font-size:12px;color:var(--muted)}
+nav button.active,nav button:hover{background:var(--red);color:#fff;border-color:var(--red)}
+nav button.active .badge,nav button:hover .badge{background:#fff3;color:#fff}
+main{padding:20px;max-width:1040px;margin:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.card{background:linear-gradient(160deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.card::after{content:"";position:absolute;inset:auto -30px -40px auto;width:90px;height:90px;border-radius:50%;background:var(--red);opacity:.08}
+.card .n{font-size:32px;font-weight:800;color:var(--red-2)}
+.card .l{color:var(--muted);font-size:14px;margin-top:4px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:20px}
+.panel h2{margin:0 0 14px;font-size:18px;color:var(--red-2);display:flex;align-items:center;gap:8px}
+input,textarea,select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px #e11d2e26}
+.grid2{display:grid;grid-template-columns:1fr 2fr;gap:12px;margin-bottom:12px}
+.grid-form{display:grid;grid-template-columns:1fr 1.4fr;gap:16px}
+@media(max-width:720px){.grid2,.grid-form{grid-template-columns:1fr}}
+.field-label{font-size:13px;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+.counter{font-size:12px;color:var(--muted)}
+.row2{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.btn{background:var(--red);color:#fff;border:0;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:.15s;white-space:nowrap}
+.btn:hover{background:var(--red-d)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.btn.ghost:hover{border-color:var(--red);color:var(--text);background:#e11d2e15}
+.btn.danger{background:#3a0a10;color:#ff8a94;border:1px solid #6b1420}
+.btn.danger:hover{background:#6b1420;color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px}
+.check{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:14px;cursor:pointer;user-select:none}
+.check input{width:auto;accent-color:var(--red)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{background:#2a0d14;border:1px solid var(--line);color:#ffb3bb;padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer;font-family:inherit}
+.chip:hover{border-color:var(--red)}
+.preview{background:#313338;border-radius:12px;padding:14px;min-height:120px;border-left:4px solid var(--red)}
+.preview .who{display:flex;align-items:center;gap:8px;font-size:13px;color:#fff;font-weight:700;margin-bottom:6px}
+.preview .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-d))}
+.preview .body{color:#dbdee1;white-space:pre-wrap;word-break:break-word;font-size:15px;line-height:1.5}
+.preview .muted{color:#949ba4;font-size:12px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters button{background:transparent;border:1px solid var(--line);color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer;font-size:13px}
+.filters button.on{background:#e11d2e22;color:var(--red-2);border-color:var(--red)}
+.search-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.search-row input{flex:1;min-width:200px}
+select{width:auto;min-width:150px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:13px}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:#e11d2e0d}
+tr.off td{opacity:.55}
+.trig{color:var(--red-2);font-weight:700;font-family:ui-monospace,Consolas,monospace;direction:ltr;text-align:right}
+.resp{color:#f3c9cf;white-space:pre-wrap;word-break:break-word;max-width:420px}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:12px;background:#2a0d14;color:var(--muted);border:1px solid var(--line);margin:2px 0}
+.tag.on{color:var(--ok);border-color:#1f5a3a}
+.tag.off{color:#ff8a94;border-color:#6b1420}
+.tag.admin{color:var(--warn);border-color:#6b5020}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.empty{color:var(--muted);text-align:center;padding:36px 10px}
+.empty .big{font-size:40px;margin-bottom:8px}
+.hint{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.8}
+code,kbd{background:#2a0d14;padding:2px 6px;border-radius:6px;color:#ffb3bb;font-family:ui-monospace,Consolas,monospace;font-size:12px}
+kbd{border:1px solid var(--line)}
+.hidden{display:none!important}
+.sys-row{display:grid;grid-template-columns:minmax(160px,1fr) 2fr;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.sys-orig code{margin:2px}
+@media(max-width:620px){.sys-row{grid-template-columns:1fr}}
+.err{color:#ff8a94;font-size:13px;min-height:18px;margin-top:8px}
+.toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:50;align-items:center}
+.toast{background:var(--panel-2);border:1px solid var(--red);padding:10px 16px;border-radius:12px;font-size:14px;box-shadow:0 8px 24px #0008;animation:up .25s ease}
+.toast.ok{border-color:var(--ok)}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.steps{counter-reset:s;display:grid;gap:10px;margin-top:6px}
+.steps div{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px 12px 44px;position:relative;font-size:14px;line-height:1.6}
+.steps div::before{counter-increment:s;content:counter(s);position:absolute;right:12px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;display:grid;place-items:center;font-weight:700}
 </style>
 </head>
 <body>
-<h1>by redmoon</h1>
+<header>
+  <span class="moon">🌙</span>
+  <h1>RedMoon</h1>
+  <span class="sub">لوحة التحكم</span>
+  <span class="dot" title="جاهز"></span>
+</header>
+
+<nav>
+  <button data-tab="overview" class="active">الرئيسية</button>
+  <button data-tab="commands">الأوامر <span class="badge" id="badge-cmds">0</span></button>
+  <button data-tab="export">تصدير / استيراد</button>
+</nav>
+
+<main>
+  <!-- OVERVIEW -->
+  <section id="tab-overview">
+    <div class="cards">
+      <div class="card"><div class="n" id="st-total">0</div><div class="l">إجمالي الأوامر</div></div>
+      <div class="card"><div class="n" id="st-on">0</div><div class="l">أوامر شغالة</div></div>
+      <div class="card"><div class="n" id="st-off">0</div><div class="l">أوامر متوقفة</div></div>
+      <div class="card"><div class="n" id="st-admin">0</div><div class="l">للأدمن بس</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>🚀 ابدأ في 3 خطوات</h2>
+      <div class="steps">
+        <div>روح لتبويب <b>الأوامر</b> واكتب الكلمة والرد اللي عايزه.</div>
+        <div>جرّب الرد في <b>المعاينة</b> وشوف شكله قبل ما تحفظ.</div>
+        <div>صدّر <code>custom_commands.json</code> وحطه في <code>discord-bot/data/</code> — البوت بيقرأه أوتوماتيك.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>📖 المتغيرات</h2>
+      <div class="hint">
+        <code>{user}</code> اسم العضو &nbsp;•&nbsp; <code>{mention}</code> منشن للعضو &nbsp;•&nbsp; <code>{server}</code> اسم السيرفر &nbsp;•&nbsp; <code>{channel}</code> اسم الروم
+      </div>
+      <div class="hint">اختصارات: <kbd>/</kbd> للبحث &nbsp;•&nbsp; <kbd>Ctrl</kbd>+<kbd>Enter</kbd> لحفظ الأمر &nbsp;•&nbsp; <kbd>Esc</kbd> لإلغاء التعديل</div>
+    </div>
+  </section>
+
+  <!-- COMMANDS -->
+  <section id="tab-commands" class="hidden">
+    <div class="panel">
+      <h2 id="form-title">➕ إضافة أمر جديد</h2>
+      <input type="hidden" id="edit-id">
+      <div class="grid-form">
+        <div>
+          <div class="field-label"><span>الكلمة (trigger)</span><span class="counter" id="cnt-trigger">0/50</span></div>
+          <input id="f-trigger" placeholder="مثال: الرابط" maxlength="50" autocomplete="off">
+          <div class="field-label" style="margin-top:12px"><span>الرد</span><span class="counter" id="cnt-response">0/1500</span></div>
+          <textarea id="f-response" placeholder="مثال: أهلاً {mention} في {server} 🌙" maxlength="1500"></textarea>
+          <div class="chips" id="chips">
+            <button class="chip" data-var="{user}">{user}</button>
+            <button class="chip" data-var="{mention}">{mention}</button>
+            <button class="chip" data-var="{server}">{server}</button>
+            <button class="chip" data-var="{channel}">{channel}</button>
+          </div>
+        </div>
+        <div>
+          <div class="field-label"><span>معاينة الرد</span><span class="counter">كده هيظهر في الشات</span></div>
+          <div class="preview">
+            <div class="who"><span class="av"></span> RedMoon <span class="muted">اليوم 12:00</span></div>
+            <div class="body" id="preview-body"><span class="muted">اكتب رد عشان تشوف المعاينة</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <label class="check"><input type="checkbox" id="f-enabled" checked> شغال</label>
+        <label class="check"><input type="checkbox" id="f-admin"> للأدمن بس</label>
+        <div style="margin-right:auto;display:flex;gap:8px">
+          <button class="btn ghost hidden" id="btn-cancel">إلغاء</button>
+          <button class="btn" id="btn-save">حفظ الأمر</button>
+        </div>
+      </div>
+      <div class="err" id="form-error"></div>
+    </div>
+
+    <div class="panel">
+      <h2>⚙️ كلمات أوامر البوت</h2>
+      <div class="hint">غيّر أي كلمة للأمر — اكتب الكلمات الجديدة مفصولة بفاصلة <code>،</code> أو <code>,</code>. سيب الخانة فاضية عشان ترجع للكلمة الأصلية. الكلمات القديمة بتتقفل لما تغيّرها.</div>
+      <div class="search-row" style="margin-top:12px">
+        <input id="sys-search" placeholder="🔍 ابحث عن أمر..." autocomplete="off">
+      </div>
+      <div id="sys-list"></div>
+      <div class="row2">
+        <button class="btn ghost sm" id="btn-sys-reset">استرجاع كل الكلمات الأصلية</button>
+        <button class="btn sm" id="btn-sys-save" style="margin-right:auto">حفظ كل الكلمات</button>
+      </div>
+      <div class="err" id="sys-error"></div>
+    </div>
+
+    <div class="panel">
+      <h2>📋 كل الأوامر</h2>
+      <div class="search-row">
+        <input id="search" placeholder="🔍 ابحث بالكلمة أو الرد..." autocomplete="off">
+        <select id="sort">
+          <option value="new">الأحدث</option>
+          <option value="az">أبجدي</option>
+          <option value="status">شغال أولاً</option>
+        </select>
+      </div>
+      <div class="filters" id="filters">
+        <button data-f="all" class="on">الكل</button>
+        <button data-f="on">شغال</button>
+        <button data-f="off">متوقف</button>
+        <button data-f="admin">أدمن</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>الكلمة</th><th>الرد</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+          <tbody id="cmd-body"></tbody>
+        </table>
+      </div>
+      <div id="cmd-empty" class="empty hidden">
+        <div class="big">🌑</div>
+        <div id="empty-text">مفيش أوامر لسه — ضيف أول أمر فوق 👆</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPORT -->
+  <section id="tab-export" class="hidden">
+    <div class="panel">
+      <h2>🔌 ربط مع البوت</h2>
+      <div class="hint">حط رابط الـ API بتاع البوت (لازم <b>https</b>) والتوكن اللي في ملف <code>.env</code> عندك. بعدها تقدر تسحب الأوامر من البوت أو تبعتها ليه مباشرة.</div>
+      <div style="display:grid;gap:10px;margin-top:12px">
+        <input id="conn-url" placeholder="https://your-bot-tunnel.example.com" autocomplete="off">
+        <input id="conn-token" type="password" placeholder="DASHBOARD_TOKEN" autocomplete="off">
+      </div>
+      <div class="row2">
+        <button class="btn ghost sm" id="btn-conn-save">حفظ الاتصال</button>
+        <button class="btn ghost sm" id="btn-conn-test">اختبار</button>
+        <button class="btn sm" id="btn-pull">⬇️ اسحب من البوت</button>
+        <button class="btn sm" id="btn-push">⬆️ ابعت للبوت</button>
+      </div>
+      <div class="err" id="conn-msg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>⬇️ تصدير للبوت</h2>
+      <div class="hint">حمّل الملف ده وحطه في <code>discord-bot/data/custom_commands.json</code>. البوت بيقرأ التعديلات أوتوماتيك من غير ما تعيد التشغيل.</div>
+      <div class="row2"><button class="btn" id="btn-export">تحميل custom_commands.json</button></div>
+    </div>
+    <div class="panel">
+      <h2>⬆️ استيراد</h2>
+      <div class="hint">ارفع ملف <code>custom_commands.json</code> عشان تكمل من حيث وقفت. ده هيستبدل الأوامر الحالية.</div>
+      <input type="file" id="import-file" accept=".json" style="margin-top:12px">
+      <div class="err" id="import-msg"></div>
+    </div>
+    <div class="panel">
+      <h2>⚠️ منطقة الخطر</h2>
+      <div class="hint">مسح كل الأوامر من المتصفح. نزّل نسخة احتياطية الأول.</div>
+      <div class="row2"><button class="btn danger" id="btn-reset">مسح كل الأوامر</button></div>
+    </div>
+  </section>
+</main>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+const KEY = "redmoon_commands_v1";
+const SYS_KEY = "redmoon_system_v2";
+const GROUPS = [{"id": "عيب", "section": "الإدارة", "defaults": ["عيب", "تحذير", "warn"]}, {"id": "شيل_تحذير", "section": "الإدارة", "defaults": ["شيل_تحذير", "unwarn"]}, {"id": "مسح_تحذيرات", "section": "الإدارة", "defaults": ["مسح_تحذيرات", "clearwarns"]}, {"id": "فضايح", "section": "الإدارة", "defaults": ["فضايح", "history", "warnhistory"]}, {"id": "تحذيرات", "section": "الإدارة", "defaults": ["تحذيرات", "allwarnings"]}, {"id": "نك", "section": "الإدارة", "defaults": ["نك", "اسم", "الاسم", "تك", "nick"]}, {"id": "تايم", "section": "الإدارة", "defaults": ["تايم", "ميوت", "صوت", "تايم_أوت", "timeout", "mute"]}, {"id": "فك_تايم", "section": "الإدارة", "defaults": ["فك_تايم", "فك-تايم", "فك_الصوت", "الصوت", "untimeout", "انتايم", "انميوت"]}, {"id": "رول", "section": "الإدارة", "defaults": ["رول", "role"]}, {"id": "حظر", "section": "الإدارة", "defaults": ["حظر", "بان", "ban"]}, {"id": "فك_بان", "section": "الإدارة", "defaults": ["فك_بان", "فك-بان", "unban", "انبان"]}, {"id": "طرد", "section": "الإدارة", "defaults": ["طرد", "كيك", "kick"]}, {"id": "مسح", "section": "الإدارة", "defaults": ["مسح", "مسح_الرسائل", "purge", "clear"]}, {"id": "إخفاء", "section": "الإدارة", "defaults": ["إخفاء", "اخفاء", "hide"]}, {"id": "إظهار", "section": "الإدارة", "defaults": ["إظهار", "اظهار", "show", "unhide"]}, {"id": "قفل", "section": "الإدارة", "defaults": ["قفل", "lock"]}, {"id": "فتح", "section": "الإدارة", "defaults": ["فتح", "unlock"]}, {"id": "مسح-كل-الرولات", "section": "الإدارة", "defaults": ["مسح-كل-الرولات", "مسح_كل_الرولات", "مسح-الرولات", "clearroles", "deleteallroles"]}, {"id": "av", "section": "الإدارة", "defaults": ["av", "avatar"]}, {"id": "banner", "section": "الإدارة", "defaults": ["banner", "بانر"]}, {"id": "كوينفليب", "section": "الألعاب", "defaults": ["كوينفليب", "coinflip"]}, {"id": "سلوت", "section": "الألعاب", "defaults": ["سلوت", "slots", "slot"]}, {"id": "حجر_ورقة_مقص", "section": "الألعاب", "defaults": ["حجر_ورقة_مقص", "حجرورقةمقص", "rps"]}, {"id": "فلوسي", "section": "الألعاب", "defaults": ["فلوسي", "balance", "bal"]}, {"id": "توب_فلوس", "section": "الألعاب", "defaults": ["توب_فلوس", "moneytop", "richest"]}, {"id": "اضافه_فلوس", "section": "الألعاب", "defaults": ["اضافه_فلوس", "addmoney"]}, {"id": "تقليل_فلوس", "section": "الألعاب", "defaults": ["تقليل_فلوس", "removemoney"]}, {"id": "اضافه_لفل", "section": "الألعاب", "defaults": ["اضافه_لفل", "addlevel"]}, {"id": "تقليل_لفل", "section": "الألعاب", "defaults": ["تقليل_لفل", "removelevel"]}, {"id": "ريست_لفل", "section": "الألعاب", "defaults": ["ريست_لفل", "resetlevels"]}, {"id": "-الوان", "section": "الألوان", "defaults": ["-الوان", "-الألوان", "-colors", "-color-roles"]}, {"id": "-مسح-كل-ال-الوان", "section": "الألوان", "defaults": ["-مسح-كل-ال-الوان", "-مسح-كل-الالوان", "-مسح_كل_الالوان", "-clear-colors", "-delete-colors"]}, {"id": "afk", "section": "عام", "defaults": ["afk", "غايب"]}, {"id": "رسايلي", "section": "عام", "defaults": ["رسايلي", "rank", "stats"]}, {"id": "توب", "section": "عام", "defaults": ["توب", "top", "t"]}, {"id": "قول", "section": "عام", "defaults": ["قول", "say"]}, {"id": "help", "section": "عام", "defaults": ["help"]}, {"id": "راتب", "section": "الاقتصاد والبنك", "defaults": ["راتب"]}, {"id": "راتبي", "section": "الاقتصاد والبنك", "defaults": ["راتبي"]}, {"id": "رصيد", "section": "الاقتصاد والبنك", "defaults": ["رصيد"]}, {"id": "عمل", "section": "الاقتصاد والبنك", "defaults": ["عمل"]}, {"id": "تحويل", "section": "الاقتصاد والبنك", "defaults": ["تحويل"]}, {"id": "إيداع", "section": "الاقتصاد والبنك", "defaults": ["إيداع"]}, {"id": "ايداع", "section": "الاقتصاد والبنك", "defaults": ["ايداع"]}, {"id": "سحب_خزنة", "section": "الاقتصاد والبنك", "defaults": ["سحب_خزنة"]}, {"id": "قرض", "section": "الاقتصاد والبنك", "defaults": ["قرض"]}, {"id": "سداد", "section": "الاقتصاد والبنك", "defaults": ["سداد"]}, {"id": "ديون", "section": "الاقتصاد والبنك", "defaults": ["ديون"]}, {"id": "تاريخ", "section": "الاقتصاد والبنك", "defaults": ["تاريخ"]}, {"id": "سجل", "section": "الاقتصاد والبنك", "defaults": ["سجل"]}, {"id": "حراميه", "section": "الاقتصاد والبنك", "defaults": ["حراميه"]}, {"id": "مستوى", "section": "الاقتصاد والبنك", "defaults": ["مستوى"]}, {"id": "شارات", "section": "الاقتصاد والبنك", "defaults": ["شارات"]}, {"id": "احصائيات", "section": "الاقتصاد والبنك", "defaults": ["احصائيات"]}, {"id": "سرقة", "section": "الاقتصاد والبنك", "defaults": ["سرقة"]}, {"id": "نهب", "section": "الاقتصاد والبنك", "defaults": ["نهب"]}, {"id": "حماية", "section": "الاقتصاد والبنك", "defaults": ["حماية"]}, {"id": "شراء", "section": "الاقتصاد والبنك", "defaults": ["شراء"]}, {"id": "بيع", "section": "الاقتصاد والبنك", "defaults": ["بيع"]}, {"id": "بيع_شخص", "section": "الاقتصاد والبنك", "defaults": ["بيع_شخص"]}, {"id": "مخزن", "section": "الاقتصاد والبنك", "defaults": ["مخزن"]}, {"id": "استثمار", "section": "الاقتصاد والبنك", "defaults": ["استثمار"]}, {"id": "تداول", "section": "الاقتصاد والبنك", "defaults": ["تداول"]}, {"id": "ماين", "section": "الاقتصاد والبنك", "defaults": ["ماين"]}, {"id": "حظ", "section": "الاقتصاد والبنك", "defaults": ["حظ"]}, {"id": "نرد_بنك", "section": "الاقتصاد والبنك", "defaults": ["نرد_بنك"]}, {"id": "روليت", "section": "الاقتصاد والبنك", "defaults": ["روليت"]}, {"id": "بلاك_جاك", "section": "الاقتصاد والبنك", "defaults": ["بلاك_جاك"]}, {"id": "ايموجي", "section": "الاقتصاد والبنك", "defaults": ["ايموجي"]}, {"id": "ضريبة", "section": "الاقتصاد والبنك", "defaults": ["ضريبة"]}, {"id": "مساعدة-بنك", "section": "الاقتصاد والبنك", "defaults": ["مساعدة-بنك"]}, {"id": "دعم", "section": "الاقتصاد والبنك", "defaults": ["دعم"]}, {"id": "سحب", "section": "الاقتصاد والبنك", "defaults": ["سحب"]}, {"id": "اعطاء_كل", "section": "الاقتصاد والبنك", "defaults": ["اعطاء_كل"]}, {"id": "ريست", "section": "الاقتصاد والبنك", "defaults": ["ريست"]}, {"id": "ريست_كل", "section": "الاقتصاد والبنك", "defaults": ["ريست_كل"]}, {"id": "مسح_التوبات", "section": "الاقتصاد والبنك", "defaults": ["مسح_التوبات"]}, {"id": "نقل", "section": "الاقتصاد والبنك", "defaults": ["نقل"]}, {"id": "تعديل_رصيد", "section": "الاقتصاد والبنك", "defaults": ["تعديل_رصيد"]}, {"id": "حظر_بنك", "section": "الاقتصاد والبنك", "defaults": ["حظر_بنك"]}, {"id": "رفع_حظر", "section": "الاقتصاد والبنك", "defaults": ["رفع_حظر"]}, {"id": "محظورين", "section": "الاقتصاد والبنك", "defaults": ["محظورين"]}, {"id": "ضبط_راتب", "section": "الاقتصاد والبنك", "defaults": ["ضبط_راتب"]}, {"id": "ضبط_فائدة", "section": "الاقتصاد والبنك", "defaults": ["ضبط_فائدة"]}, {"id": "ضبط_كولداون", "section": "الاقتصاد والبنك", "defaults": ["ضبط_كولداون"]}, {"id": "ضبط_غرفة", "section": "الاقتصاد والبنك", "defaults": ["ضبط_غرفة"]}];
+let systemCommands = loadSystem();
+
+function loadSystem(){
+  try{
+    const raw=localStorage.getItem(SYS_KEY);
+    if(raw){ const p=JSON.parse(raw); if(p && typeof p==="object" && !Array.isArray(p)) return p; }
+  }catch(e){}
+  return {};
+}
+function parseWords(text){
+  return [...new Set(text.split(/[,،]/).map(w=>w.trim().toLowerCase()).filter(Boolean))];
+}
+function renderSystem(){
+  const q=($("sys-search")?.value||"").trim().toLowerCase();
+  const sections=[...new Set(GROUPS.map(g=>g.section))];
+  let html="";
+  for(const sec of sections){
+    const rows=GROUPS.filter(g=>g.section===sec && (!q || g.defaults.some(d=>d.toLowerCase().includes(q))));
+    if(!rows.length) continue;
+    html+=`<h3 style="color:var(--red-2);margin:18px 0 8px;font-size:15px">${esc(sec)}</h3>`;
+    html+=rows.map(g=>{
+      const custom=Array.isArray(systemCommands[g.id])?systemCommands[g.id].join("، "):"";
+      return `<div class="sys-row">
+        <div class="sys-orig">${g.defaults.map(d=>`<code>${esc(d)}</code>`).join(" ")}</div>
+        <input data-id="${esc(g.id)}" value="${esc(custom)}" placeholder="الكلمات الجديدة (اتركها فاضية للأصلي)" autocomplete="off">
+      </div>`;
+    }).join("");
+  }
+  $("sys-list").innerHTML = html || '<div class="empty">مفيش أوامر بالاسم ده</div>';
+}
+function saveSystem(){
+  const inputs=[...document.querySelectorAll("#sys-list input[data-id]")];
+  const next={}, seen=new Map(), err=$("sys-error");
+  err.textContent="";
+  for(const inp of inputs){
+    const id=inp.dataset.id;
+    const words=parseWords(inp.value);
+    if(!words.length) continue;
+    const bad=words.find(w=>/^[!+\-]/.test(w) || /\s/.test(w));
+    if(bad){ err.textContent=`الكلمة "${bad}" مش صالحة (ماتبدأش بـ ! + - ومن غير مسافات)`; inp.focus(); return false; }
+    for(const w of words){
+      if(seen.has(w) && seen.get(w)!==id){ err.textContent=`الكلمة "${w}" مستخدمة في أمرين`; inp.focus(); return false; }
+      seen.set(w,id);
+    }
+    next[id]=words;
+  }
+  systemCommands=next;
+  try{ localStorage.setItem(SYS_KEY, JSON.stringify(systemCommands)); }catch(e){}
+  renderSystem();
+  toast("✅ اتحفظت الكلمات — صدّر الملف عشان البوت يشتغل بيها");
+  return true;
+}
+let commands = load();
+let editingId = null;
+let filter = "all";
+
+/* ---------- storage ---------- */
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const parsed = JSON.parse(raw); if(Array.isArray(parsed)) return parsed; }
+  }catch(e){}
+  return [
+    {id:"1",trigger:"الرابط",response:"رابط السيرفر: https://discord.gg/xxxx",enabled:true,adminOnly:false,created:Date.now()-2000},
+    {id:"2",trigger:"مرحبا",response:"أهلاً {mention} في {server} 🌙",enabled:true,adminOnly:false,created:Date.now()-1000}
+  ];
+}
+function persist(){
+  try{ localStorage.setItem(KEY, JSON.stringify(commands)); }
+  catch(e){ toast("⚠️ المتصفح مش مسموح بالحفظ المحلي، نزّل نسخة احتياطية", false); }
+  render();
+}
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function toast(msg, ok=true){
+  const t=document.createElement("div");
+  t.className="toast"+(ok?" ok":"");
+  t.textContent=msg;
+  $("toasts").appendChild(t);
+  setTimeout(()=>t.remove(),2800);
+}
+function renderVars(text){
+  const sample={user:"Ahmed",mention:"@Ahmed",server:"سيرفر RedMoon",channel:"general"};
+  return String(text).replace(/\{(user|mention|server|channel)\}/g,(_,k)=>sample[k]);
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll("nav button").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    ["overview","commands","export"].forEach(t=>$("tab-"+t).classList.toggle("hidden", t!==btn.dataset.tab));
+  };
+});
+
+/* ---------- form ---------- */
+function updateCounters(){
+  $("cnt-trigger").textContent=$("f-trigger").value.length+"/"+MAX_TRIGGER;
+  $("cnt-response").textContent=$("f-response").value.length+"/"+MAX_RESPONSE;
+  const r=$("f-response").value;
+  $("preview-body").innerHTML = r.trim() ? esc(renderVars(r)) : '<span class="muted">اكتب رد عشان تشوف المعاينة</span>';
+}
+["f-trigger","f-response"].forEach(id=>$(id).addEventListener("input",updateCounters));
+
+function insertAtCursor(text){
+  const ta=$("f-response"), s=ta.selectionStart, e=ta.selectionEnd;
+  ta.value=ta.value.slice(0,s)+text+ta.value.slice(e);
+  ta.focus(); ta.selectionStart=ta.selectionEnd=s+text.length;
+  updateCounters();
+}
+document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>insertAtCursor(c.dataset.var));
+
+function resetForm(){
+  editingId=null;
+  $("f-trigger").value=""; $("f-response").value="";
+  $("f-enabled").checked=true; $("f-admin").checked=false;
+  $("form-title").textContent="➕ إضافة أمر جديد";
+  $("btn-save").textContent="حفظ الأمر";
+  $("btn-cancel").classList.add("hidden");
+  $("form-error").textContent="";
+  updateCounters();
+}
+function validate(trigger, response){
+  if(!trigger) return "لازم تكتب الكلمة";
+  if(!response) return "لازم تكتب الرد";
+  if(/^[!+\-]/.test(trigger)) return "الكلمة ماتبدأش بـ ! أو + أو - (البوت بيضيفها أوتوماتيك)";
+  if(/\s{2,}/.test(trigger)) return "مسافات كتير في الكلمة";
+  const dup=commands.find(c=>c.trigger.toLowerCase()===trigger.toLowerCase() && c.id!==editingId);
+  if(dup) return "فيه أمر بنفس الكلمة قبل كده";
+  return "";
+}
+function saveCommand(){
+  const trigger=$("f-trigger").value.trim();
+  const response=$("f-response").value.trim();
+  const err=validate(trigger,response);
+  $("form-error").textContent=err;
+  if(err) return;
+  const data={trigger, response, enabled:$("f-enabled").checked, adminOnly:$("f-admin").checked};
+  if(editingId){
+    Object.assign(commands.find(c=>c.id===editingId), data);
+    toast("✅ تم حفظ التعديل");
+  }else{
+    commands.unshift({id:uid(), created:Date.now(), ...data});
+    toast("✅ تم إضافة الأمر");
+  }
+  resetForm(); persist();
+}
+$("btn-save").onclick=saveCommand;
+$("btn-sys-save").onclick=saveSystem;
+$("btn-sys-reset").onclick=()=>{
+  if(!confirm("ترجع كل الكلمات للأصلي؟")) return;
+  systemCommands={};
+  try{ localStorage.setItem(SYS_KEY, JSON.stringify(systemCommands)); }catch(e){}
+  renderSystem(); toast("↩️ رجعت كل الكلمات الأصلية");
+};
+$("sys-search").oninput=renderSystem;
+$("btn-cancel").onclick=resetForm;
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey && e.key==="Enter" && !$("tab-commands").classList.contains("hidden")) saveCommand();
+  if(e.key==="Escape" && editingId) resetForm();
+  if(e.key==="/" && document.activeElement.tagName!=="INPUT" && document.activeElement.tagName!=="TEXTAREA"){
+    e.preventDefault();
+    document.querySelector('nav button[data-tab="commands"]').click();
+    $("search").focus();
+  }
+});
+
+/* ---------- row actions ---------- */
+function startEdit(id){
+  const c=commands.find(x=>x.id===id); if(!c) return;
+  editingId=id;
+  $("f-trigger").value=c.trigger; $("f-response").value=c.response;
+  $("f-enabled").checked=c.enabled!==false; $("f-admin").checked=!!c.adminOnly;
+  $("form-title").textContent="✏️ تعديل: "+c.trigger;
+  $("btn-save").textContent="حفظ التعديل";
+  $("btn-cancel").classList.remove("hidden");
+  document.querySelector('nav button[data-tab="commands"]').click();
+  updateCounters();
+  window.scrollTo({top:0,behavior:"smooth"});
+  $("f-response").focus();
+}
+function duplicate(id){
+  const c=commands.find(x=>x.id===id); if(!c) return;
+  let name=c.trigger+" (نسخة)", n=2;
+  while(commands.some(x=>x.trigger.toLowerCase()===name.toLowerCase())) name=c.trigger+" ("+(n++)+")";
+  commands.unshift({...c, id:uid(), trigger:name, created:Date.now()});
+  toast("📄 اتعملت نسخة"); persist();
+}
+function toggle(id){
+  const c=commands.find(x=>x.id===id);
+  c.enabled = c.enabled===false;
+  toast(c.enabled?"▶️ الأمر اتشغّل":"⏸️ الأمر اتوقف"); persist();
+}
+function remove(id){
+  const c=commands.find(x=>x.id===id);
+  if(!confirm(`تحذف الأمر "${c.trigger}"؟`)) return;
+  commands=commands.filter(x=>x.id!==id);
+  toast("🗑️ اتحذف الأمر"); persist();
+}
+window.startEdit=startEdit; window.toggle=toggle; window.remove=remove; window.duplicate=duplicate;
+
+/* ---------- list / filters ---------- */
+document.querySelectorAll("#filters button").forEach(b=>b.onclick=()=>{
+  filter=b.dataset.f;
+  document.querySelectorAll("#filters button").forEach(x=>x.classList.toggle("on",x===b));
+  render();
+});
+$("search").oninput=render;
+$("sort").onchange=render;
+
+function visible(){
+  const q=$("search").value.trim().toLowerCase();
+  let list=commands.filter(c=>{
+    if(filter==="on" && c.enabled===false) return false;
+    if(filter==="off" && c.enabled!==false) return false;
+    if(filter==="admin" && !c.adminOnly) return false;
+    if(!q) return true;
+    return c.trigger.toLowerCase().includes(q) || c.response.toLowerCase().includes(q);
+  });
+  const sort=$("sort").value;
+  if(sort==="az") list.sort((a,b)=>a.trigger.localeCompare(b.trigger,"ar"));
+  else if(sort==="status") list.sort((a,b)=>(a.enabled===false)-(b.enabled===false));
+  else list.sort((a,b)=>(b.created||0)-(a.created||0));
+  return list;
+}
+
+function render(){
+  const list=visible();
+  $("cmd-body").innerHTML=list.map(c=>`
+    <tr class="${c.enabled===false?'off':''}">
+      <td class="trig">${esc(c.trigger)}</td>
+      <td class="resp">${esc(c.response)}</td>
+      <td>
+        <span class="tag ${c.enabled===false?'off':'on'}">${c.enabled===false?'متوقف':'شغال'}</span>
+        ${c.adminOnly?'<span class="tag admin">أدمن</span>':''}
+      </td>
+      <td><div class="actions">
+        <button class="btn ghost sm" onclick="startEdit('${c.id}')">تعديل</button>
+        <button class="btn ghost sm" onclick="duplicate('${c.id}')">نسخ</button>
+        <button class="btn ghost sm" onclick="toggle('${c.id}')">${c.enabled===false?'تشغيل':'إيقاف'}</button>
+        <button class="btn danger sm" onclick="remove('${c.id}')">حذف</button>
+      </div></td>
+    </tr>`).join("");
+
+  const empty=list.length===0;
+  $("cmd-empty").classList.toggle("hidden", !empty);
+  if(empty) $("empty-text").textContent = commands.length
+      ? "مفيش نتايج للبحث أو الفلتر ده 🔎"
+      : "مفيش أوامر لسه — ضيف أول أمر فوق 👆";
+
+  const on=commands.filter(c=>c.enabled!==false).length;
+  const admin=commands.filter(c=>c.adminOnly).length;
+  $("st-total").textContent=commands.length;
+  $("st-on").textContent=on;
+  $("st-off").textContent=commands.length-on;
+  $("st-admin").textContent=admin;
+  $("badge-cmds").textContent=commands.length;
+}
+
+/* ---------- export / import ---------- */
+$("btn-export").onclick=()=>{
+  const blob=new Blob([JSON.stringify({commands, systemCommands},null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  const d=new Date().toISOString().slice(0,10);
+  a.href=URL.createObjectURL(blob);
+  a.download=`custom_commands-${d}.json`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast("⬇️ الملف اتحمل — سميه custom_commands.json وحطه في data/");
+};
+$("import-file").onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{
+    const json=JSON.parse(await f.text());
+    if(!Array.isArray(json.commands)) throw new Error("bad");
+    commands=json.commands
+      .filter(c=>c && c.trigger && c.response)
+      .map(c=>({id:c.id||uid(),trigger:String(c.trigger),response:String(c.response),
+                enabled:c.enabled!==false,adminOnly:!!c.adminOnly,created:c.created||Date.now()}));
+    if(json.systemCommands && typeof json.systemCommands==="object" && !Array.isArray(json.systemCommands)){
+      systemCommands=json.systemCommands;
+      try{ localStorage.setItem(SYS_KEY, JSON.stringify(systemCommands)); }catch(e){}
+      renderSystem();
+    }
+    $("import-msg").textContent="";
+    toast(`✅ اتستورد ${commands.length} أمر`); persist();
+  }catch(err){ $("import-msg").textContent="❌ الملف مش صالح"; }
+  e.target.value="";
+};
+$("btn-reset").onclick=()=>{
+  if(!confirm("متأكد؟ كل الأوامر هتتمسح")) return;
+  commands=[]; toast("🗑️ اتمسحت كل الأوامر"); persist();
+};
+
+/* ---------- bot connection ---------- */
+const CONN_KEY = "redmoon_conn_v1";
+function loadConn(){ try{ return JSON.parse(localStorage.getItem(CONN_KEY)||"{}"); }catch(e){ return {}; } }
+function connValues(){
+  return { url: $("conn-url").value.trim().replace(/\/+$/,""), token: $("conn-token").value.trim() };
+}
+function connMsg(text, ok){
+  const el=$("conn-msg"); el.textContent=text; el.style.color = ok ? "var(--ok)" : "#ff8a94";
+}
+function connHeaders(token){ return { "Authorization": "Bearer "+token, "Content-Type": "application/json" }; }
+async function connFetch(method, body){
+  const c=connValues();
+  if(!c.url || !c.token){ throw new Error("لازم تكتب الرابط والتوكن الأول"); }
+  if(!c.url.startsWith("https://") && !/^http:\/\/localhost/.test(c.url)){
+    throw new Error("الرابط لازم يبدأ بـ https://");
+  }
+  const res=await fetch(c.url+"/api/config",{method, headers:connHeaders(c.token), body: body?JSON.stringify(body):undefined});
+  if(res.status===401) throw new Error("التوكن غلط");
+  if(!res.ok) throw new Error("البوت رد بخطأ ("+res.status+")");
+  return res.json();
+}
+$("btn-conn-save").onclick=()=>{
+  const c=connValues();
+  try{ localStorage.setItem(CONN_KEY, JSON.stringify(c)); }catch(e){}
+  connMsg("✅ الاتصال اتحفظ", true);
+};
+$("btn-conn-test").onclick=async()=>{
+  try{
+    const c=connValues();
+    const r=await fetch(c.url+"/api/health");
+    connMsg(r.ok ? "✅ البوت شغال وبيرد" : "❌ البوت مش بيرد", r.ok);
+  }catch(e){ connMsg("❌ مقدرش أوصل للبوت — اتأكد من الرابط وإن البوت شغال", false); }
+};
+$("btn-pull").onclick=async()=>{
+  try{
+    const data=await connFetch("GET");
+    commands=(data.commands||[]).map(c=>({id:c.id||uid(),trigger:String(c.trigger),response:String(c.response),
+      enabled:c.enabled!==false,adminOnly:!!c.adminOnly,created:c.created||Date.now()}));
+    systemCommands=data.systemCommands||{};
+    try{ localStorage.setItem(SYS_KEY, JSON.stringify(systemCommands)); }catch(e){}
+    renderSystem(); persist();
+    connMsg("✅ اتسحبت "+commands.length+" أمر من البوت", true);
+  }catch(e){ connMsg("❌ "+e.message, false); }
+};
+$("btn-push").onclick=async()=>{
+  try{
+    const payload={commands:commands.map(c=>({id:c.id,trigger:c.trigger,response:c.response,enabled:c.enabled!==false,adminOnly:!!c.adminOnly})), systemCommands};
+    const r=await connFetch("PUT", payload);
+    connMsg("✅ اتبعتوا "+r.count+" أمر للبوت — البوت هيشتغل بيهم دلوقتي", true);
+  }catch(e){ connMsg("❌ "+e.message, false); }
+};
+(function initConn(){
+  const c=loadConn();
+  if(c.url) $("conn-url").value=c.url;
+  if(c.token) $("conn-token").value=c.token;
+})();
+
+updateCounters();
+renderSystem();
+render();
+</script>
 </body>
 </html>
